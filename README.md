@@ -1,7 +1,3 @@
----
-layout: ../layouts/BaseLayout.astro
----
-
 OpenID Mock Server
 ==================
 
