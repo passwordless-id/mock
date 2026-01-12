@@ -1,0 +1,15 @@
+{
+    "keys": [
+        {
+            "kid": "mock-key",
+            "crv": "P-256",
+            "ext": true,
+            "key_ops": [
+                "verify"
+            ],
+            "kty": "EC",
+            "x": "rKYjIw25sMyTlTYW0YxeLoHeOobv150JjqxIfXENgvM",
+            "y": "1UhFJRo8A4SNdoaQclL1OQJz3gLxbV7d99paYk7s4Sg"
+        }
+    ]
+}
