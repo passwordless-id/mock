@@ -5,9 +5,11 @@ layout: ../layouts/BaseLayout.astro
 OpenID Mock Server
 ==================
 
-This OpenID/Oauth2 mock server can be used to test libraries, implementations or perform automated integration tests.
+This OpenID/Oauth2 mock server is publicly available at https://mock.passwordless.id
 
-It's publicly available at https://mock.passwordless.id
+It can be used to test libraries, implementations or perform automated integration tests against.
+
+It is not a tutorial on how OAuth2 / OpenID works, it is merely a mock server that you can use as placeholder. It will not show an interactive login screen, but will simulate the sign-in of the user "John Doe" instead.
 
 Getting started
 ----------------
@@ -17,25 +19,6 @@ When using a library, you usually need following information:
 - **issuer**: `https://mock.passwordless.id`
 - **client_id**: `test`
 - **client_secret**: `s3cr3t`
-
-
-When performing the authorization code flow, the server will always return the same user:
-
-```json
-{
-  "sub": "1234567890",
-  "name": "John Doe",
-  "email": "john.doe@example.com",
-  "email_verified": true
-}
-```
-
-Repeatability
--------------
-
-While the flow is the same on each request, their content is not identical.
-
-The `id_token` contains an `iat` (issued at) timestamp, so it will be different on each request. The `code` and `access_token` are randomly generated too and remain valid for 1 hour.
 
 
 Endpoints
@@ -80,3 +63,22 @@ GET /userinfo HTTP/1.1
 Host: mock.passwordless.id
 Authorization: Bearer ACCESS_TOKEN_HERE
 ```
+
+
+When performing the authorization code flow, the server will always return the same user:
+
+```json
+{
+  "sub": "1234567890",
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "email_verified": true
+}
+```
+
+Repeatability
+-------------
+
+While the flow is the same on each request, their content is not identical.
+
+The `id_token` contains an `iat` (issued at) timestamp, so it will be different on each request. The `code` remains valid for 1 minute and the `token` (opaque access token) remains valid for 1 hour. This should be sufficient for testing purposes.

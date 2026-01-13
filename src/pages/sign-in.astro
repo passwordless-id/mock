@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro"
+---
+<BaseLayout>
+    <h1>Sign In</h1>
+    <p>This is a mock sign-in page. In a real implementation, you would present a login form here.</p>
+    <form method="POST" action="/sign-in-submit">
+        <p>Name: <b>John Doe</b></p>
+        <p>E-Mail: <b>john.doe@example.com</b></p>
+        <button type="submit" class="btn">Sign In</button>
+    </form>
+</BaseLayout>

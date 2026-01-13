@@ -36,3 +36,21 @@ tr:nth-child(even) {
 tr:hover {
 	  background-color: #f1f1f1;
 }
+
+.btn {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #0070f3;
+  border: none;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn:hover {
+  background-color: #005bb5;
+}
+.btn:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}

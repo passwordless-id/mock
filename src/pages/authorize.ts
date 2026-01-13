@@ -1,11 +1,5 @@
 import type { APIContext } from "astro";
 import * as z from "zod";
-import { generateFakeUser } from "../utils/fake_user";
-import { createJwt } from "../utils/tokens";
-
-const CODE_TTL = 60;
-const ID_TOKEN_TTL = 3600;
-
 
 /**
  * /authorize endpoint parameters according to the OAuth 2.1, PKCE and OpenID specification.
@@ -160,37 +154,6 @@ export async function GET(context :APIContext) {
         return new Response("Unauthorized client_id, please use 'test'.", { status: 401 });
     }
 
-    // For simplicity, we skip user authentication here.
-    // In a real implementation, you would validate the client_id and redirect_uri,
-    // authenticate the user, and obtain their consent.
-    // Redirect back to the client with a dummy authorization code or id_token
-
-    const redirectUrl = new URL(params.redirect_uri as string);
-    const KV = context.locals.runtime.env.KV;
-
-    if (response_type_parts.includes("code")) {
-        const code :string = crypto.randomUUID();
-        await KV.put(code, JSON.stringify(params), { expirationTtl: CODE_TTL });
-        redirectUrl.searchParams.set("code", code);
-    }
-
-    if (response_type_parts.includes("id_token")) {
-        // create a dummy id_token (JWT)
-        const user = generateFakeUser();
-        const id_token = await createJwt({
-            iss: context.url.origin,
-            aud: params.client_id,
-            exp: Math.floor(Date.now() / 1000) + ID_TOKEN_TTL,
-            iat: Math.floor(Date.now() / 1000),
-            nonce: params.nonce,
-            ...user
-        });
-        redirectUrl.searchParams.set("id_token", id_token);
-    }
-
-    if (params.state) {
-        redirectUrl.searchParams.set("state", params.state);
-    }
-    
-    return Response.redirect(redirectUrl.toString(), 302);
+    context.session?.set('params', params);
+    return context.redirect('/sign-in');
 }

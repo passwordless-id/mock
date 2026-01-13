@@ -1,4 +1,6 @@
 import type { APIContext } from "astro";
+import { z } from "astro/zod";
+import type { AuthorizeParams } from "./authorize";
 
 
 /**
@@ -50,8 +52,90 @@ export interface TokenParams {
      * The code verifier used in the PKCE flow.
      */
     code_verifier?: string;
+
+    /**
+     * The scope of the access request. Usually used in client credentials flow.
+     */
+    scope?: string;
 }
 
 export async function POST(context :APIContext) {
-    
-}   
+    // read and parse the form data
+    const formData = await context.request.formData();
+    const params: TokenParams = z.object({
+        client_id: z.string(),
+        client_secret: z.string().optional(),
+        grant_type: z.enum(['authorization_code', 'client_credentials', 'refresh_token', 'password']),
+        code: z.string().optional(),
+        redirect_uri: z.string().optional(),
+        refresh_token: z.string().optional(),
+        code_verifier: z.string().optional(),
+        scope: z.string().optional(),
+    }).parse(Object.fromEntries(formData.entries()));
+
+    const KV = context.locals.runtime.env.KV;
+
+    if (params.grant_type === 'authorization_code') {
+        // Handle authorization code grant
+        if (!params.code) {
+            return new Response("Missing authorization code", { status: 400 });
+        }
+
+        const rawJson = await KV.get(`codes/${params.code}`);
+        if (!rawJson) {
+            return new Response("Invalid authorization code", { status: 400 });
+        }
+        else {
+            const storedParams: AuthorizeParams = JSON.parse(rawJson);
+            if (storedParams.client_id !== params.client_id) {
+                return new Response("Client ID does not match authorization code", { status: 400 });
+            }
+            if(storedParams.redirect_uri !== params.redirect_uri) {
+                return new Response("Redirect URI does not match authorization code", { status: 400 });
+            }
+            if(storedParams.code_challenge) {
+                if(!params.code_verifier) {
+                    return new Response("Missing code verifier", { status: 400 });
+                }
+                // verify PKCE
+                const hashed = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(params.code_verifier));
+                const base64url = btoa(String.fromCharCode(...new Uint8Array(hashed)))
+                    .replace(/=/g, '')
+                    .replace(/\+/g, '-')
+                    .replace(/\//g, '_');
+                if(base64url !== storedParams.code_challenge) {
+                    return new Response("Invalid code verifier", { status: 400 });
+                }
+            }
+            if(params.scope) {
+                if(params.scope !== storedParams.scope) {
+                    return new Response("Requested scope does not match authorization code", { status: 400 });
+                }
+            }
+            else {
+                params.scope = storedParams.scope;
+            }
+
+            // all checks passed, delete the code to prevent reuse
+            await KV.delete(params.code);
+        }
+    } else if (params.grant_type === 'client_credentials') {
+        // Handle client credentials grant
+        if(params.client_id != 'test' || params.client_secret != 's3cr3t') {
+            return new Response("Invalid client credentials", { status: 400 });
+        }
+    } else {
+        // Other grant types are not supported in this mock implementation
+        return new Response("Grant type not supported", { status: 400 });
+    }
+
+    const access_token = crypto.randomUUID();
+    await KV.put(`access_tokens/${access_token}`, JSON.stringify(params), { expirationTtl: 3600 });
+    const tokenResponse = {
+        access_token,
+        token_type: "Bearer",
+        expires_in: 3600,
+        scope: params.scope
+    };
+    return new Response(JSON.stringify(tokenResponse), { headers: { 'Content-Type': 'application/json' } });
+}
