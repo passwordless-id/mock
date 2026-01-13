@@ -8,7 +8,7 @@ const baseUrl = Astro.url.origin;
     <h1>Callback Received</h1>
    
     <p>Your authorization code is: <strong>{code}</strong></p>
-    <form method="POST" action="{baseUrl}/token">
+    <form method="POST" action={`${baseUrl}/token`}>
         <p>
             <label>grant_type</label>
             <input disabled name="grant_type" value="authorization_code" />
