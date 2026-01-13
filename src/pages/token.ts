@@ -12,7 +12,7 @@ export interface TokenParams {
     /**
      * The client identifier as described in Section 2.2 of the OAuth 2.1 specification.
      */
-    client_id: string;
+    client_id?: string;
 
     /**
      * The client secret as described in Section 2.3 of the OAuth 2.1 specification.
@@ -62,8 +62,9 @@ export interface TokenParams {
 export async function POST(context :APIContext) {
     // read and parse the form data
     const formData = await context.request.formData();
+    
     const params: TokenParams = z.object({
-        client_id: z.string(),
+        client_id: z.string().optional(),
         client_secret: z.string().optional(),
         grant_type: z.enum(['authorization_code', 'client_credentials', 'refresh_token', 'password']),
         code: z.string().optional(),
