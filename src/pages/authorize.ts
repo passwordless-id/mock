@@ -118,10 +118,10 @@ export interface AuthorizeParams {
  * 
  * Only the id_token and code flows are supported for now.
  */
-export async function GET(context :APIContext) {
-    // validate parameters
-    const url = new URL(context.request.url);
+export async function GET(context :APIContext) {    
     
+    // validate parameters
+    const rawParams = Object.fromEntries(context.url.searchParams.entries())
     const params : AuthorizeParams = z.object({
             client_id: z.string(),
             response_type: z.enum(['none', 'code', 'token', 'id_token', 'code id_token', 'code token', 'id_token token', 'code id_token token']),
@@ -141,7 +141,7 @@ export async function GET(context :APIContext) {
             request: z.string().optional(),
             request_uri: z.string().optional(),
             claims: z.string().optional(),
-        }).parse(Object.fromEntries(url.searchParams.entries()));
+        }).parse(rawParams);
     
     const response_type_parts = params.response_type.split(" ");
     // only allow response_type 'code' and 'id_token' for now

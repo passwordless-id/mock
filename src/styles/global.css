@@ -54,3 +54,10 @@ tr:hover {
   background-color: #999;
   cursor: not-allowed;
 }
+
+form > p > label  {
+  display: inline-block;
+  text-align: right;
+  width: 200px;
+  margin-right: 1rem;
+}

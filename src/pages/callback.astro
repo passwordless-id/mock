@@ -1,0 +1,34 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const code = Astro.url.searchParams.get("code");
+const baseUrl = Astro.url.origin;
+---
+<BaseLayout>
+    <h1>Callback Received</h1>
+   
+    <p>Your authorization code is: <strong>{code}</strong></p>
+    <form method="POST" action="{baseUrl}/token">
+        <p>
+            <label>grant_type</label>
+            <input disabled name="grant_type" value="authorization_code" />
+        </p>
+        <p>
+            <label>code</label>
+            <input disabled name="code" value={code} />
+        </p>
+        <p>
+            <label>redirect_uri</label>
+            <input disabled name="redirect_uri" value={`${baseUrl}/callback`} />
+        </p>
+        <p>
+            <label>client_id</label>
+            <input disabled name="client_id" value="test" />
+        </p>
+        <p>
+            <label>client_secret</label>
+            <input disabled name="client_secret" value="s3cr3t" />
+        </p>
+        <button type="submit" class="btn">Exchange Authorization Code for Tokens</button>
+    </form>
+</BaseLayout>
