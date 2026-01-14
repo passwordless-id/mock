@@ -9,5 +9,8 @@ export default defineConfig({
 	site: "https://mock.passwordless.id",
 	integrations: [mdx()],
 	adapter: cloudflare(),
-	output: "server"
+	output: "server",
+	session: { 
+		ttl: 600
+	},
 });
