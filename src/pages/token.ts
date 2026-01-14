@@ -59,6 +59,26 @@ export interface TokenParams {
     scope?: string;
 }
 
+async function getCredentials(request :Request) : Promise<{username: string, password: string} | null> {
+    const authHeader = request.headers.get("Authorization");
+    if (authHeader && authHeader.startsWith("Basic ")) {    
+        const base64Credentials = authHeader.substring(6);
+        const credentials = atob(base64Credentials);
+        const [username, password] = credentials.split(":");
+        return { username, password };
+    }
+    else {
+        // read it from the form data
+        const formData = await request.formData();
+        const username = formData.get("client_id");
+        const password = formData.get("client_secret");
+        if (!username || !password) {
+            return null;
+        }
+        return { username: String(username), password: String(password) };
+    }
+}
+
 export async function POST(context :APIContext) {
     // read and parse the form data
     const formData = await context.request.formData();
@@ -74,6 +94,15 @@ export async function POST(context :APIContext) {
         scope: z.string().optional(),
     }).parse(Object.fromEntries(formData.entries()));
 
+
+    const credentials = await getCredentials(context.request);
+    if(!credentials) {
+        return new Response("Missing client credentials", { status: 401 });
+    }
+    if(credentials.username !== 'test' || credentials.password !== 's3cr3t') {
+        return new Response("Invalid client credentials", { status: 401 });
+    }
+    
     const KV = context.locals.runtime.env.KV;
 
     if (params.grant_type === 'authorization_code') {
