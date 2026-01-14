@@ -75,7 +75,7 @@ export async function POST(context :APIContext) {
         scope: z.string().optional(),
     }).parse(Object.fromEntries(formData.entries()));
 
-    
+
     // verify that either an Athorization header with client credentials or client_id and client_secret are provided
     const authHeader = context.request.headers.get("Authorization");
     if (authHeader && authHeader.startsWith("Basic ")) {    
@@ -97,6 +97,8 @@ export async function POST(context :APIContext) {
             return new Response("Invalid client credentials", { status: 401 });
         }
     }
+    
+    console.log("Token request params:", JSON.stringify(params));
 
     const KV = context.locals.runtime.env.KV;
 
@@ -144,12 +146,7 @@ export async function POST(context :APIContext) {
             // all checks passed, delete the code to prevent reuse
             await KV.delete(params.code);
         }
-    } else if (params.grant_type === 'client_credentials') {
-        // Handle client credentials grant
-        if(params.client_id != 'test' || params.client_secret != 's3cr3t') {
-            return new Response("Invalid client credentials", { status: 400 });
-        }
-    } else {
+    } else  {
         // Other grant types are not supported in this mock implementation
         return new Response("Grant type not supported", { status: 400 });
     }
