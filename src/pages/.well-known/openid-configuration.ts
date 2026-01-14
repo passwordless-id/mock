@@ -6,6 +6,7 @@ export async function GET(context :APIContext) {
         "issuer": origin,
         "authorization_endpoint": `${origin}/authorize`,
         "token_endpoint": `${origin}/token`,
+        "userinfo_endpoint": `${origin}/userinfo`,
         "jwks_uri": `${origin}/.well-known/jwks.json`,
         "response_types_supported": ["code", "id_token", "code id_token"],
         "subject_types_supported": ["public"],
