@@ -11,6 +11,9 @@ export default defineConfig({
 	adapter: cloudflare(),
 	output: "server",
 	session: { 
-		ttl: 600
+		ttl: 600 // otherwise, the session data is kept forever
 	},
+	security: {
+		checkOrigin: false // otherwise the oauth2 / openid calls fail since they come from another domain
+	}
 });
