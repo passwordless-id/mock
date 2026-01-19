@@ -150,9 +150,9 @@ export async function GET(context :APIContext) {
         return toErrorRedirect("/error", "unsupported_response_type", "Unsupported response_type, only 'code' and 'id_token' are supported.");
     }
 
-    // check if clien_id is 'test'
-    if (params.client_id !== "test") {
-        return toErrorRedirect("/error", "unauthorized_client", "Unauthorized client_id, please use 'test'.");
+    // check if clien_id is 'MyClient'
+    if (params.client_id !== "MyClient") {
+        return toErrorRedirect("/error", "unauthorized_client", "Unauthorized client_id, please use 'MyClient'.");
     }
 
     context.session?.set('params', params);

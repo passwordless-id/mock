@@ -83,7 +83,7 @@ export async function POST(context :APIContext) {
         const base64Credentials = authHeader.substring(6);
         const credentials = atob(base64Credentials);
         const [username, password] = credentials.split(":");
-        if(username !== 'test' || password !== 's3cr3t') {
+        if(username !== 'MyClient' || password !== 'MySecret') {
             return toErrorResponse(401, "invalid_client", "Invalid client credentials");
         }
     }
@@ -94,7 +94,7 @@ export async function POST(context :APIContext) {
         if (!username || !password) {
             return toErrorResponse(401, "invalid_client", "Missing client credentials");
         }
-        if(String(username) !== 'test' || String(password) !== 's3cr3t') {
+        if(String(username) !== 'MyClient' || String(password) !== 'MySecret') {
             return toErrorResponse(401, "invalid_client", "Invalid client credentials");
         }
     }

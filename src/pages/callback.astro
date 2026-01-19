@@ -12,8 +12,8 @@ const baseUrl = Astro.url.origin;
         <input hidden name="grant_type" value="authorization_code" />
         <input hidden name="code" value={code} />
         <input hidden name="redirect_uri" value={`${baseUrl}/callback`} />
-        <input hidden name="client_id" value="test" />
-        <input hidden name="client_secret" value="s3cr3t" />
+        <input hidden name="client_id" value="MyClient" />
+        <input hidden name="client_secret" value="MySecret" />
         <button type="submit" class="btn">Exchange Authorization Code for Tokens</button>
     </form>
 </BaseLayout>

@@ -13,8 +13,8 @@ Getting started
 When using a library, you usually need following information:
 
 - **issuer**: `https://mock.passwordless.id`
-- **client_id**: `test`
-- **client_secret**: `s3cr3t`
+- **client_id**: `MyClient`
+- **client_secret**: `MySecret`
 
 
 Endpoints
@@ -39,7 +39,7 @@ Here are some typical requests you would perform against the mock server.
 ### Authorization Request
 
 ```http
-GET /authorize?response_type=code&client_id=test&redirect_uri=https://example.com/callback&scope=openid%20email%20profile&state=xyz HTTP/1.1
+GET /authorize?response_type=code&client_id=MyClient&redirect_uri=https://example.com/callback&scope=openid%20email%20profile&state=xyz HTTP/1.1
 Host: mock.passwordless.id
 ```
 
@@ -49,7 +49,7 @@ Host: mock.passwordless.id
 POST /token HTTP/1.1
 Host: mock.passwordless.id
 Content-Type: application/x-www-form-urlencoded
-grant_type=authorization_code&code=AUTH_CODE_HERE&redirect_uri=https://example.com/callback&client_id=test&client_secret=s3cr3t
+grant_type=authorization_code&code=AUTH_CODE_HERE&redirect_uri=https://example.com/callback&client_id=MyClient&client_secret=MySecret
 ```
 
 ### UserInfo Request
