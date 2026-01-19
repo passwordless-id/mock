@@ -1,6 +1,7 @@
 import type { APIContext } from "astro";
 import { z } from "astro/zod";
 import type { AuthorizeParams } from "./authorize";
+import { toErrorResponse } from "../utils/errors";
 
 
 /**
@@ -83,7 +84,7 @@ export async function POST(context :APIContext) {
         const credentials = atob(base64Credentials);
         const [username, password] = credentials.split(":");
         if(username !== 'test' || password !== 's3cr3t') {
-            return new Response("Invalid client credentials", { status: 401 });
+            return toErrorResponse(401, "invalid_client", "Invalid client credentials");
         }
     }
     else {
@@ -91,10 +92,10 @@ export async function POST(context :APIContext) {
         const username = formData.get("client_id");
         const password = formData.get("client_secret");
         if (!username || !password) {
-            return new Response("Missing client credentials", { status: 401 });
+            return toErrorResponse(401, "invalid_client", "Missing client credentials");
         }
         if(String(username) !== 'test' || String(password) !== 's3cr3t') {
-            return new Response("Invalid client credentials", { status: 401 });
+            return toErrorResponse(401, "invalid_client", "Invalid client credentials");
         }
     }
     
@@ -105,24 +106,24 @@ export async function POST(context :APIContext) {
     if (params.grant_type === 'authorization_code') {
         // Handle authorization code grant
         if (!params.code) {
-            return new Response("Missing authorization code", { status: 400 });
+            return toErrorResponse(400, "invalid_request", "Missing authorization code.");
         }
 
         const rawJson = await KV.get(`codes/${params.code}`);
         if (!rawJson) {
-            return new Response("Invalid authorization code", { status: 400 });
+            return toErrorResponse(400, "invalid_grant", "Invalid authorization code.");
         }
         else {
             const storedParams: AuthorizeParams = JSON.parse(rawJson);
             if (storedParams.client_id !== params.client_id) {
-                return new Response("Client ID does not match authorization code", { status: 400 });
+                return toErrorResponse(400, "invalid_grant", "Client ID does not match authorization code.");
             }
             if(storedParams.redirect_uri !== params.redirect_uri) {
-                return new Response("Redirect URI does not match authorization code", { status: 400 });
+                return toErrorResponse(400, "invalid_grant", "Redirect URI does not match authorization code");
             }
             if(storedParams.code_challenge) {
                 if(!params.code_verifier) {
-                    return new Response("Missing code verifier", { status: 400 });
+                    return toErrorResponse(400, "invalid_request", "Missing code verifier");
                 }
                 // verify PKCE
                 const hashed = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(params.code_verifier));
@@ -131,12 +132,12 @@ export async function POST(context :APIContext) {
                     .replace(/\+/g, '-')
                     .replace(/\//g, '_');
                 if(base64url !== storedParams.code_challenge) {
-                    return new Response("Invalid code verifier", { status: 400 });
+                    return toErrorResponse(400, "invalid_grant", "Invalid code verifier");
                 }
             }
             if(params.scope) {
                 if(params.scope !== storedParams.scope) {
-                    return new Response("Requested scope does not match authorization code", { status: 400 });
+                    return toErrorResponse(400, "invalid_grant", "Requested scope does not match authorization code");
                 }
             }
             else {
@@ -148,7 +149,7 @@ export async function POST(context :APIContext) {
         }
     } else  {
         // Other grant types are not supported in this mock implementation
-        return new Response("Grant type not supported", { status: 400 });
+        return toErrorResponse(400, "unsupported_grant_type", "Grant type not supported");
     }
 
     const access_token = crypto.randomUUID();

@@ -1,0 +1,16 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro"
+
+// this page should show the "error" and "error_description" query parameters if present
+const error = Astro.url.searchParams.get("error");
+const errorDescription = Astro.url.searchParams.get("error_description");
+const state = Astro.url.searchParams.get("state");
+---
+<BaseLayout>
+    <h1>Woops</h1>
+    <p><i>It seems like something went wrong.</i></p>
+    <p>Error: <b>{error}</b></p>
+    <p>Description: {errorDescription}</p>
+
+    {state && <p>State: {state}</p>}
+</BaseLayout>
