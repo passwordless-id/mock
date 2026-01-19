@@ -1,6 +1,6 @@
 import type { APIContext } from "astro";
 import * as z from "zod";
-import { ErrorResponse, toErrorRedirect, toErrorResponse } from "../utils/errors";
+import { toErrorRedirect } from "../utils/errors";
 
 /**
  * /authorize endpoint parameters according to the OAuth 2.1, PKCE and OpenID specification.

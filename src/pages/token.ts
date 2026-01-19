@@ -115,9 +115,6 @@ export async function POST(context :APIContext) {
         }
         else {
             const storedParams: AuthorizeParams = JSON.parse(rawJson);
-            if (storedParams.client_id !== params.client_id) {
-                return toErrorResponse(400, "invalid_grant", "Client ID does not match authorization code.");
-            }
             if(storedParams.redirect_uri !== params.redirect_uri) {
                 return toErrorResponse(400, "invalid_grant", "Redirect URI does not match authorization code");
             }
