@@ -5,11 +5,10 @@ layout: ../layouts/BaseLayout.astro
 OpenID Mock Server
 ==================
 
-This OpenID/Oauth2 mock server is publicly available at https://mock.passwordless.id
+This OpenID/Oauth2 mock server is a placeholder to safely test libraries, implementations or perform automated integration tests against. The mock user "John Doe" will always be returned.
 
-It can be used to test libraries, implementations or perform automated integration tests against.
+It is freely available without registration needed. If you like it, [help support it](https://github.com/sponsors/passwordless-id) to keep it running.
 
-It is not a tutorial on how OAuth2 / OpenID works, it is merely a mock server that you can use as placeholder. It will not show an interactive login screen, but will simulate the sign-in of the user "John Doe" instead.
 
 Getting started
 ----------------
@@ -21,51 +20,16 @@ When using a library, you usually need following information:
 - **client_secret**: `MySecret`
 
 
-Endpoints
----------
 
-If you need to configure the client manually, here is the list of endpoints:
+Authorization Request
+---------------------
 
-| Endpoint               | Path                 |
-|------------------------|----------------------|
-| Authorization Endpoint | `/authorize`         |
-| Token Endpoint         | `/token`             |
-| UserInfo Endpoint      | `/userinfo`          |
-| JWKS Endpoint          | `/.well-known/jwks.json` |
-| OpenID Configuration   | `/.well-known/openid-configuration` |
+<a class="btn" href="/authorize?response_type=code&client_id=MyClient&redirect_uri=https%3A%2F%2Fmock.passwordless.id%2Fcallback&scope=openid%20email%20profile&state=xyz">Try it out</a>
 
 
-Typical requests
-----------------
 
-Here are some typical requests you would perform against the mock server.
-
-### Authorization Request
-
-https://mock.passwordless.id/authorize?response_type=code&client_id=MyClient&redirect_uri=https%3A%2F%2Fmock.passwordless.id%2Fcallback&scope=openid%20email%20profile&state=xyz
-
-```http
-GET /authorize?response_type=code&client_id=MyClient&redirect_uri=.../callback&scope=openid%20email%20profile&state=xyz HTTP/1.1
-Host: mock.passwordless.id
-```
-
-### Token Request
-
-```http
-POST /token HTTP/1.1
-Host: mock.passwordless.id
-Content-Type: application/x-www-form-urlencoded
-grant_type=authorization_code&code=AUTH_CODE_HERE&redirect_uri=.../callback&client_id=MyClient&client_secret=MySecret
-```
-
-### UserInfo Request
-
-```http
-GET /userinfo HTTP/1.1
-Host: mock.passwordless.id
-Authorization: Bearer ACCESS_TOKEN_HERE
-```
-
+The mock user
+-------------
 
 When performing the authorization code flow, the server will always return the same user:
 
@@ -78,9 +42,8 @@ When performing the authorization code flow, the server will always return the s
 }
 ```
 
-Repeatability
--------------
 
-While the flow is the same on each request, their content is not identical.
+Sources & Docs
+--------------
 
-The `id_token` contains an `iat` (issued at) timestamp, so it will be different on each request. The `code` remains valid for 1 minute and the `token` (opaque access token) remains valid for 1 hour. This should be sufficient for testing purposes.
+[https://github.com/passwordless-id/mock](https://github.com/passwordless-id/mock)
