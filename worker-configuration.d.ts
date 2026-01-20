@@ -8800,7 +8800,7 @@ interface RequestInitCfProperties extends Record<string, unknown> {
     /**
      * Redirects the request to an alternate origin server. You can use this,
      * for example, to implement load balancing across several origins.
-     * (e.g.us-east.example.com)
+     * (e.g.us-east.example.org)
      *
      * Note - For security reasons, the hostname set in resolveOverride must
      * be proxied on the same Cloudflare zone of the incoming request.

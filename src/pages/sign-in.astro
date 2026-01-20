@@ -6,7 +6,7 @@ import BaseLayout from "../layouts/BaseLayout.astro"
     <p>This is a mock sign-in page. In a real implementation, you would present a login form here.</p>
     <form method="POST" action="/sign-in-submit">
         <p>Name: <b>John Doe</b></p>
-        <p>E-Mail: <b>john.doe@example.com</b></p>
-        <button type="submit" class="btn">Sign In</button>
+        <p>E-Mail: <b>john.doe@example.org</b></p>
+        <button type="submit" class="btn" data-test-id="sign-in-btn" data-testid="sign-in-btn">Sign In</button>
     </form>
 </BaseLayout>

@@ -3,7 +3,7 @@ export function generateFakeUser(scope?: string) {
     const user = {
         sub: "1234567890",
         name: "John Doe",
-        email: "john.doe@example.com",
+        email: "john.doe@example.org",
         email_verified: true,
         picture: "https://www.loremfaces.net/48/id/1.jpg",
         
