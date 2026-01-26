@@ -49,9 +49,9 @@ export function toErrorResponse(status: number, error: TokenEndpointError | User
 }
 
 
-export function showError(context :APIContext, error: AuthorizeEndpointError, error_description: string) {
+export async function showError(context :APIContext, error: AuthorizeEndpointError, error_description: string) :Promise<Response> {
     console.log("Showing error:", error, error_description);
-    context.rewrite(`/error?error=${error}&error_description=${encodeURIComponent(error_description)}`);
+    return context.rewrite(`/error?error=${error}&error_description=${encodeURIComponent(error_description)}`);
 }
 
 
