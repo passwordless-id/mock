@@ -14,7 +14,7 @@ export async function onRequest(context :APIContext, next :() => Promise<Respons
         return toErrorResponse(400, "invalid_request", `Invalid request parameters: ${message}`);
     }
     console.error("Unhandled error in middleware:", error);
-    console.trace(error);
+    console.error(error.stack);
     return toErrorResponse(500, "server_error", "An internal server error occurred.");
   }
 }
