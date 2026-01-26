@@ -1,6 +1,6 @@
 import type { APIContext } from "astro";
 import * as z from "zod";
-import { toErrorRedirect } from "../utils/errors";
+import { showError, toErrorRedirect } from "../utils/errors";
 
 /**
  * /authorize endpoint parameters according to the OAuth 2.1, PKCE and OpenID specification.
@@ -147,12 +147,12 @@ export async function GET(context :APIContext) {
     const response_type_parts = params.response_type.split(" ");
     // only allow response_type 'code' and 'id_token' for now
     if (!response_type_parts.every(part => part === "code" || part === "id_token")) {
-        return toErrorRedirect("/error", "unsupported_response_type", "Unsupported response_type, only 'code' and 'id_token' are supported.");
+        return showError(context, "unsupported_response_type", "Unsupported response_type, only 'code' and 'id_token' are supported.");
     }
 
     // check if clien_id is 'MyClient'
     if (params.client_id !== "MyClient") {
-        return toErrorRedirect("/error", "unauthorized_client", "Unauthorized client_id, please use 'MyClient'.");
+        return showError(context, "unauthorized_client", "Unauthorized client_id, please use 'MyClient'.");
     }
 
     context.session?.set('params', params);

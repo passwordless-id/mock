@@ -1,3 +1,5 @@
+import type { APIContext } from "astro";
+
 export type AuthorizeEndpointError =
   | "invalid_request"
   | "unauthorized_client"
@@ -45,6 +47,13 @@ export function toErrorResponse(status: number, error: TokenEndpointError | User
             },
         });
 }
+
+
+export function showError(context :APIContext, error: AuthorizeEndpointError, error_description: string) {
+    console.log("Showing error:", error, error_description);
+    context.rewrite(`/error?error=${error}&error_description=${encodeURIComponent(error_description)}`);
+}
+
 
 export function toErrorRedirect(redirect_uri: string, error: AuthorizeEndpointError, error_description: string, state?: string) {
     const url = new URL(redirect_uri);

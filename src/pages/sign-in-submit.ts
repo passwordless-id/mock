@@ -2,18 +2,18 @@ import type { APIContext } from "astro";
 import type { AuthorizeParams } from "./authorize";
 import { generateFakeUser } from "../utils/fake_user";
 import { createJwt } from "../utils/tokens";
-import { toErrorRedirect } from "../utils/errors";
+import { showError, toErrorRedirect } from "../utils/errors";
 
 const CODE_TTL = 60;
 const ID_TOKEN_TTL = 3600;
 
 export async function POST(context :APIContext) {
     if (!context.session) {
-        return toErrorRedirect("/error", "invalid_request", "Session support is required for this endpoint.");
+        return showError(context, "invalid_request", "Session support is required for this endpoint.");
     }
     const params :AuthorizeParams = await context.session.get('params') as AuthorizeParams;
     if (!params) {
-        return toErrorRedirect("/error", "invalid_request", "Invalid session. Please perform a new authorization request.");
+        return showError(context, "invalid_request", "Invalid session. Please perform a new authorization request.");
     }
 
     const redirectUrl = new URL(params.redirect_uri as string);
