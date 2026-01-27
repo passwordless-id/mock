@@ -15,5 +15,12 @@ export default defineConfig({
 	},
 	security: {
 		checkOrigin: false // otherwise the oauth2 / openid calls fail since they come from another domain
+	},
+	server: {
+		headers: {
+			"Access-Control-Allow-Origin": "*",
+			"Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+			"Access-Control-Allow-Headers": "Content-Type"
+		}
 	}
 });

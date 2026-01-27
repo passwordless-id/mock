@@ -5,11 +5,7 @@ import { toErrorResponse } from "./utils/errors";
 export async function onRequest(context :APIContext, next :() => Promise<Response>) {
   try {
       const response = await next();
-      /*
-      response.headers.set("Access-Control-Allow-Origin", "*");
-      response.headers.set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-      response.headers.set("Access-Control-Allow-Headers", "Content-Type");
-      */
+      // 2 step to allow inspecting content for debug purposes
       return response;
   }
   catch (error) {
