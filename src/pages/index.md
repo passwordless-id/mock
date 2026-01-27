@@ -24,7 +24,7 @@ When using a library, you usually need following information:
 Authorization Request
 ---------------------
 
-<a class="btn" href="/authorize?response_type=code&client_id=MyClient&redirect_uri=https%3A%2F%2Fmock.passwordless.id%2Fcallback&scope=openid%20email%20profile&state=xyz">Try it out</a>
+<a class="btn" id="auth_url">Try it out</a>
 
 
 
@@ -47,3 +47,7 @@ Sources & Docs
 --------------
 
 [https://github.com/passwordless-id/mock](https://github.com/passwordless-id/mock)
+
+<script>
+  document.getElementById("auth_url").href = "/authorize?response_type=code&client_id=MyClient&redirect_uri=" + encodeURIComponent(window.location.origin) + "%2Fcallback&scope=openid%20email%20profile&state=xyz";
+</script>
