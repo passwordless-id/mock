@@ -4,7 +4,13 @@ import { toErrorResponse } from "./utils/errors";
 
 export async function onRequest(context :APIContext, next :() => Promise<Response>) {
   try {
-    return await next();
+      const response = await next();
+
+      response.headers.set("Access-Control-Allow-Origin", "*");
+      response.headers.set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+      response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+
+      return response;
   }
   catch (error) {
     if (error instanceof z.ZodError) {
