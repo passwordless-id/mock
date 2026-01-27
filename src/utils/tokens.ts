@@ -14,7 +14,7 @@ export const NOT_SO_SECRET_MOCK_PRIVATE_KEY :JsonWebKeyWithKid = {
 }
 
 export async function createJwt(payload :any): Promise<any> {
-    return await jwt.sign(payload, NOT_SO_SECRET_MOCK_PRIVATE_KEY, {algorithm: 'ES256'});
+    return await jwt.sign(payload, NOT_SO_SECRET_MOCK_PRIVATE_KEY, {algorithm: "ES256", header:{"kid": NOT_SO_SECRET_MOCK_PRIVATE_KEY.kid}});
 }
 
 export async function verifyJwt(token :string): Promise<any> {
