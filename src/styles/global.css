@@ -20,12 +20,35 @@ main {
 h1 {
   text-align: center;
 }
-h1, h2, h3 {
-  line-height: 1.25;
-}
+
+
 
 code, pre {
   font-family: ui-monospace, monospace;
+}
+
+fieldset {
+  border: 1px solid #eee;
+  border-radius: 0.25rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+legend {
+  color: #999;
+}
+
+.field {
+  display: flex;
+}
+
+.field > * {
+  flex: 1;
+}
+
+.field > label {
+  text-align: right;
+  margin-right: 1rem;
 }
 
 pre {
@@ -69,9 +92,9 @@ tr:hover {
   cursor: not-allowed;
 }
 
-form > p > label  {
-  display: inline-block;
-  text-align: right;
-  width: 200px;
-  margin-right: 1rem;
+input, select, textarea {
+  margin: 0 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
 }

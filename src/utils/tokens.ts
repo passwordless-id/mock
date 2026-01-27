@@ -18,9 +18,5 @@ export async function createJwt(payload :any): Promise<any> {
 }
 
 export async function verifyJwt(token :string): Promise<any> {
-    const isValid = await jwt.verify(token, NOT_SO_SECRET_MOCK_PRIVATE_KEY);
-    if (!isValid) {
-        throw new Error("Invalid token");
-    }
-    return jwt.decode(token);
+    return jwt.verify(token, NOT_SO_SECRET_MOCK_PRIVATE_KEY);
 }

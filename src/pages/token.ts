@@ -2,6 +2,7 @@ import type { APIContext } from "astro";
 import { z } from "astro/zod";
 import type { AuthorizeParams } from "./authorize";
 import { toErrorResponse } from "../utils/errors";
+import { createJwt } from "../utils/tokens";
 
 
 /**
@@ -60,6 +61,10 @@ export interface TokenParams {
     scope?: string;
 }
 
+type ExtendedAuthorizationParams = AuthorizeParams & {
+    token_type: string;
+    expires_in: number;
+};
 
 export async function POST(context :APIContext) {
     // read and parse the form data
@@ -114,7 +119,7 @@ export async function POST(context :APIContext) {
             return toErrorResponse(400, "invalid_grant", "Invalid authorization code.");
         }
         else {
-            const storedParams: AuthorizeParams = JSON.parse(rawJson);
+            const storedParams: ExtendedAuthorizationParams = JSON.parse(rawJson);
             if(storedParams.redirect_uri !== params.redirect_uri) {
                 return toErrorResponse(400, "invalid_grant", "Redirect URI does not match authorization code");
             }
@@ -143,19 +148,39 @@ export async function POST(context :APIContext) {
 
             // all checks passed, delete the code to prevent reuse
             await KV.delete(params.code);
+
+            if(storedParams.token_type === 'opaque') {
+                const access_token = crypto.randomUUID();
+                await KV.put(`access_tokens/${access_token}`, JSON.stringify(params), { expirationTtl: storedParams.expires_in });
+                const tokenResponse = {
+                    access_token,
+                    token_type: "Bearer",
+                    expires_in: storedParams.expires_in,
+                    scope: params.scope
+                };
+                return new Response(JSON.stringify(tokenResponse), { headers: { 'Content-Type': 'application/json' } });
+            } else if(storedParams.token_type === 'jwt') {
+                // create a dummy access_token (JWT)
+                const access_token = await createJwt({
+                    iss: context.url.origin,
+                    aud: params.client_id,
+                    exp: Math.floor(Date.now() / 1000) + storedParams.expires_in,
+                    iat: Math.floor(Date.now() / 1000),
+                    scope: params.scope
+                });
+                const tokenResponse = {
+                    access_token,
+                    token_type: "Bearer",
+                    expires_in: storedParams.expires_in,
+                    scope: params.scope
+                };
+                return new Response(JSON.stringify(tokenResponse), { headers: { 'Content-Type': 'application/json' } });
+            } else {
+                return toErrorResponse(500, "server_error", "Unsupported token type requested");
+            }
         }
     } else  {
         // Other grant types are not supported in this mock implementation
         return toErrorResponse(400, "unsupported_grant_type", "Grant type not supported");
     }
-
-    const access_token = crypto.randomUUID();
-    await KV.put(`access_tokens/${access_token}`, JSON.stringify(params), { expirationTtl: 3600 });
-    const tokenResponse = {
-        access_token,
-        token_type: "Bearer",
-        expires_in: 3600,
-        scope: params.scope
-    };
-    return new Response(JSON.stringify(tokenResponse), { headers: { 'Content-Type': 'application/json' } });
 }

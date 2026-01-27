@@ -5,7 +5,7 @@ import { createJwt } from "../utils/tokens";
 import { showError, toErrorRedirect } from "../utils/errors";
 
 const CODE_TTL = 60;
-const ID_TOKEN_TTL = 3600;
+
 
 export async function POST(context :APIContext) {
     if (!context.session) {
@@ -19,10 +19,17 @@ export async function POST(context :APIContext) {
     const redirectUrl = new URL(params.redirect_uri as string);
     const KV = context.locals.runtime.env.KV;
 
+    const formData = await context.request.formData();
+    const token_type = formData.get("token_type") ?? "opaque";
+    const expires_in = parseInt(formData.get("expires_in") as string) || 3600;
+    if(expires_in < 0 || expires_in > 31536000) { // one year
+        return showError(context, "invalid_request", "Invalid expiration value.");
+    }
+
     const response_type_parts = params.response_type.split(" ");
     if (response_type_parts.includes("code")) {
         const code :string = crypto.randomUUID();
-        await KV.put(`codes/${code}`, JSON.stringify(params), { expirationTtl: CODE_TTL });
+        await KV.put(`codes/${code}`, JSON.stringify({...params, token_type, expires_in}), { expirationTtl: CODE_TTL });
         redirectUrl.searchParams.set("code", code);
     }
 
@@ -32,7 +39,7 @@ export async function POST(context :APIContext) {
         const id_token = await createJwt({
             iss: context.url.origin,
             aud: params.client_id,
-            exp: Math.floor(Date.now() / 1000) + ID_TOKEN_TTL,
+            exp: Math.floor(Date.now() / 1000) + expires_in,
             iat: Math.floor(Date.now() / 1000),
             nonce: params.nonce,
             ...user

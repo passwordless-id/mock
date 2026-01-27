@@ -1,6 +1,7 @@
 import type { APIContext } from "astro";
 import { generateFakeUser } from "../utils/fake_user";
 import { toErrorResponse } from "../utils/errors";
+import { verifyJwt } from "../utils/tokens";
 
 export async function GET(context :APIContext) {
     // Read the ID token from the Authorization header
@@ -9,13 +10,28 @@ export async function GET(context :APIContext) {
         return toErrorResponse(401, "invalid_token", "Missing or invalid Authorization header");
     }
     const access_token = authHeader.substring("Bearer ".length);
-    const KV = context.locals.runtime.env.KV;
-    const rawJson = await KV.get(`access_tokens/${access_token}`);
-    if (!rawJson) {
-        return toErrorResponse(401, "invalid_token", "Invalid access token");
+    if(access_token.includes(".")) {
+        // It's a JWT
+        try {
+            const tokenData = await verifyJwt(access_token);
+            return buildUserInfo(tokenData.scope);
+        } catch (error) {
+            return toErrorResponse(401, "invalid_token", "Invalid access token");
+        }
     }
+    else {
+        const KV = context.locals.runtime.env.KV;
+        const rawJson = await KV.get(`access_tokens/${access_token}`);
+        if (!rawJson) {
+            return toErrorResponse(401, "invalid_token", "Invalid access token");
+        }
+    
+        const tokenData = JSON.parse(rawJson);
+        return buildUserInfo(tokenData.scope);
+    }
+}
 
-    const tokenData = JSON.parse(rawJson);
-    const userInfo = generateFakeUser(tokenData.scope);
+function buildUserInfo(scope: string) {
+    const userInfo = generateFakeUser(scope);
     return new Response(JSON.stringify(userInfo), { headers: { 'Content-Type': 'application/json' } });
 }
