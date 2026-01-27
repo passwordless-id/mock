@@ -18,9 +18,11 @@ export default defineConfig({
 	},
 	server: {
 		headers: {
+			"Server": "Passwordless Mock Server",
 			"Access-Control-Allow-Origin": "*",
 			"Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-			"Access-Control-Allow-Headers": "Content-Type"
+			"Access-Control-Allow-Headers": "Content-Type",
+			"Powered-By": "Passwordless.ID"
 		}
 	}
 });
