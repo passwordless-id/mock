@@ -14,6 +14,7 @@ export async function GET(context :APIContext) {
         // It's a JWT
         try {
             const tokenData = await verifyJwt(access_token);
+            console.log("Verified JWT token data:", tokenData);
             return buildUserInfo(tokenData.scope);
         } catch (error) {
             console.log("Invalid JWT token:", error);
@@ -29,6 +30,7 @@ export async function GET(context :APIContext) {
         }
     
         const tokenData = JSON.parse(rawJson);
+        console.log("Verified opaque token data:", tokenData);
         return buildUserInfo(tokenData.scope);
     }
 }
