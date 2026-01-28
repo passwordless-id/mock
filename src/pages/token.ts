@@ -161,16 +161,16 @@ export async function POST(context :APIContext) {
                 };
                 return new Response(JSON.stringify(tokenResponse), { headers: { 'Content-Type': 'application/json' } });
             } else if(storedParams.token_type === 'jwt') {
-                // create a dummy access_token (JWT)
+                // create a dummy access_token (JWT) with only sub and scope
                 const { generateFakeUser } = await import('../utils/fake_user');
-                const user = generateFakeUser(storedParams.user_selection, params.scope);
+                const user = generateFakeUser(storedParams.user_selection);
                 const access_token = await createJwt({
                     iss: context.url.origin,
                     aud: params.client_id,
+                    sub: user.sub,
                     exp: Math.floor(Date.now() / 1000) + storedParams.expires_in,
                     iat: Math.floor(Date.now() / 1000),
-                    scope: params.scope,
-                    ...user
+                    scope: params.scope
                 });
                 const tokenResponse = {
                     access_token,

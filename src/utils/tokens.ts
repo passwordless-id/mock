@@ -1,4 +1,4 @@
-import jwt, { type JwtData } from '@tsndr/cloudflare-worker-jwt';
+import jwt, { type JwtData, type JwtPayload } from '@tsndr/cloudflare-worker-jwt';
 
 export const NOT_SO_SECRET_MOCK_PRIVATE_KEY :JsonWebKeyWithKid = {
   "kid": "mock-key",
@@ -17,7 +17,7 @@ export async function createJwt(payload :any): Promise<any> {
     return await jwt.sign(payload, NOT_SO_SECRET_MOCK_PRIVATE_KEY, {algorithm: "ES256", header:{"kid": NOT_SO_SECRET_MOCK_PRIVATE_KEY.kid}});
 }
 
-export async function verifyJwt(token :string): Promise<JwtData> {
+export async function verifyJwt(token :string): Promise<JwtPayload> {
     await jwt.verify(token, NOT_SO_SECRET_MOCK_PRIVATE_KEY); // appears to return nothing ?!?
-    return jwt.decode(token); // to get the payload
+    return jwt.decode(token).payload; // to get the payload
 }
