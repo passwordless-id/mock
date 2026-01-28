@@ -20,6 +20,7 @@ export async function POST(context :APIContext) {
     const KV = context.locals.runtime.env.KV;
 
     const formData = await context.request.formData();
+    const user_selection = formData.get("user_selection") as string ?? "john";
     const token_type = formData.get("token_type") ?? "opaque";
     const expires_in = parseInt(formData.get("expires_in") as string) || 3600;
     if(expires_in < 0 || expires_in > 31536000) { // one year
@@ -29,13 +30,13 @@ export async function POST(context :APIContext) {
     const response_type_parts = params.response_type.split(" ");
     if (response_type_parts.includes("code")) {
         const code :string = crypto.randomUUID();
-        await KV.put(`codes/${code}`, JSON.stringify({...params, token_type, expires_in}), { expirationTtl: CODE_TTL });
+        await KV.put(`codes/${code}`, JSON.stringify({...params, token_type, expires_in, user_selection}), { expirationTtl: CODE_TTL });
         redirectUrl.searchParams.set("code", code);
     }
 
     if (response_type_parts.includes("id_token")) {
         // create a dummy id_token (JWT)
-        const user = generateFakeUser();
+        const user = generateFakeUser(user_selection, params.scope);
         const id_token = await createJwt({
             iss: context.url.origin,
             aud: params.client_id,

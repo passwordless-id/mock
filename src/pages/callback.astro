@@ -7,16 +7,102 @@ const code = Astro.url.searchParams.get("code");
     <h1>Callback Received</h1>
    
     <p>Your authorization code is: <strong>{code}</strong></p>
-    <form id="token_form" method="POST" action="/token">
-        <input hidden name="grant_type" value="authorization_code" />
-        <input hidden name="code" value={code} />
-        <input hidden name="redirect_uri" id="redirect_uri" />
-        <input hidden name="client_id" value="MyClient" />
-        <input hidden name="client_secret" value="MySecret" />
-        <button type="submit" class="btn">Exchange Authorization Code for Tokens</button>
-    </form>
+    
+    <div class="action-section">
+        <button id="exchange-btn" class="btn">Exchange Authorization Code for Tokens</button>
+    </div>
 
-    <script>
-        document.getElementById("redirect_uri").value = `${window.location.origin}/callback`;
+    <div id="token-result" class="result-box" style="display: none;">
+        <h2>Token Response</h2>
+        <pre id="token-data"></pre>
+        <button id="fetch-userinfo-btn" class="btn" style="margin-top: 1rem;">Fetch User Info</button>
+    </div>
+
+    <div id="userinfo-result" class="result-box" style="display: none;">
+        <h2>User Info Response</h2>
+        <pre id="userinfo-data"></pre>
+    </div>
+
+
+    <script define:vars={{ code }}>
+        let accessToken = null;
+
+        document.getElementById("exchange-btn").addEventListener("click", async () => {
+            const btn = document.getElementById("exchange-btn");
+            btn.disabled = true;
+            btn.textContent = "Exchanging...";
+
+            try {
+                const formData = new URLSearchParams({
+                    grant_type: "authorization_code",
+                    code: code,
+                    redirect_uri: `${window.location.origin}/callback`,
+                    client_id: "MyClient",
+                    client_secret: "MySecret"
+                });
+
+                const response = await fetch("/token", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    accessToken = data.access_token;
+                    document.getElementById("token-data").textContent = JSON.stringify(data, null, 2);
+                    document.getElementById("token-result").style.display = "block";
+                    btn.textContent = "✓ Tokens Received";
+                } else {
+                    document.getElementById("token-data").textContent = JSON.stringify(data, null, 2);
+                    document.getElementById("token-result").style.display = "block";
+                    btn.disabled = false;
+                    btn.textContent = "Exchange Failed - Try Again";
+                }
+            } catch (error) {
+                alert("Error exchanging code: " + error.message);
+                btn.disabled = false;
+                btn.textContent = "Exchange Authorization Code for Tokens";
+            }
+        });
+
+        document.getElementById("fetch-userinfo-btn").addEventListener("click", async () => {
+            if (!accessToken) {
+                alert("No access token available");
+                return;
+            }
+
+            const btn = document.getElementById("fetch-userinfo-btn");
+            btn.disabled = true;
+            btn.textContent = "Fetching...";
+
+            try {
+                const response = await fetch("/userinfo", {
+                    headers: {
+                        "Authorization": `Bearer ${accessToken}`
+                    }
+                });
+
+                const userInfo = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById("userinfo-data").textContent = JSON.stringify(userInfo, null, 2);
+                    document.getElementById("userinfo-result").style.display = "block";
+                    btn.textContent = "✓ User Info Loaded";
+                } else {
+                    document.getElementById("userinfo-data").textContent = JSON.stringify(userInfo, null, 2);
+                    document.getElementById("userinfo-result").style.display = "block";
+                    btn.disabled = false;
+                    btn.textContent = "Fetch Failed - Try Again";
+                }
+            } catch (error) {
+                alert("Error fetching user info: " + error.message);
+                btn.disabled = false;
+                btn.textContent = "Fetch User Info";
+            }
+        });
     </script>
 </BaseLayout>

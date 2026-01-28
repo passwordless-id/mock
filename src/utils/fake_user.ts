@@ -1,16 +1,47 @@
-export function generateFakeUser(scope?: string) {
-    // default OpenID profile properties
-    const user = {
+export interface MockUser {
+    sub: string;
+    name?: string;
+    email?: string;
+    email_verified?: boolean;
+    picture?: string;
+}
+
+const PREDEFINED_USERS: Record<string, MockUser> = {
+    john: {
         sub: "1234567890",
         name: "John Doe",
         email: "john.doe@example.org",
         email_verified: true,
+        picture: "https://www.loremfaces.net/48/id/2.jpg",
+    },
+    jane: {
+        sub: "5555555555",
+        name: "Jane Smith",
+        email: "jane.smith@example.org",
+        email_verified: true,
         picture: "https://www.loremfaces.net/48/id/1.jpg",
-        
-    };
+    },
+    admin: {
+        sub: "9876543210",
+        name: "Admin User",
+        email: "admin@example.org",
+        email_verified: true,
+        picture: "https://www.loremfaces.net/48/id/3.jpg",
+    },
+};
+
+export function generateFakeUser(userSelection?: string, scope?: string): MockUser {
+    let user: MockUser;
+    
+    if (userSelection && PREDEFINED_USERS[userSelection]) {
+        user = PREDEFINED_USERS[userSelection];
+    } else {
+        user = PREDEFINED_USERS.john;
+    }
+    
     if (scope) {
         const scopeSet = new Set(scope.split(" "));
-        const filteredUser: Record<string, any> = { sub: user.sub };
+        const filteredUser: MockUser = { sub: user.sub };
         if (scopeSet.has("profile")) {
             filteredUser.name = user.name;
         }
@@ -21,4 +52,8 @@ export function generateFakeUser(scope?: string) {
         return filteredUser;
     }
     return user;
+}
+
+export function getAvailableUsers() {
+    return Object.keys(PREDEFINED_USERS);
 }

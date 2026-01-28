@@ -5,12 +5,41 @@ import BaseLayout from "../layouts/BaseLayout.astro"
     <h1>Sign In</h1>
     <p>This is a mock sign-in page. In a real implementation, you would present a login form here.</p>
     <form method="POST" action="/sign-in-submit">
-        
-        
-            <p class="field"><label>Name:</label><b>John Doe</b></p>
-            <p class="field"><label>E-Mail:</label><b>john.doe@example.org</b></p>
-        
-        
+        <fieldset>
+            <legend>Select User</legend>
+            <div class="user-selection">
+                <label class="user-card">
+                    <input type="radio" name="user_selection" value="john" data-testid="user-selection-john" checked required>
+                    <div class="user-content">
+                        <img src="https://www.loremfaces.net/48/id/2.jpg" alt="John Doe" class="user-portrait">
+                        <div class="user-info">
+                            <div class="user-name">John Doe</div>
+                            <div class="user-email">john.doe@example.org</div>
+                        </div>
+                    </div>
+                </label>
+                <label class="user-card">
+                    <input type="radio" name="user_selection" value="jane" data-testid="user-selection-jane" required>
+                    <div class="user-content">
+                        <img src="https://www.loremfaces.net/48/id/1.jpg" alt="Jane Smith" class="user-portrait">
+                        <div class="user-info">
+                            <div class="user-name">Jane Smith</div>
+                            <div class="user-email">jane.smith@example.org</div>
+                        </div>
+                    </div>
+                </label>
+                <label class="user-card">
+                    <input type="radio" name="user_selection" value="admin" data-testid="user-selection-admin" required>
+                    <div class="user-content">
+                        <img src="https://www.loremfaces.net/48/id/3.jpg" alt="Admin User" class="user-portrait">
+                        <div class="user-info">
+                            <div class="user-name">Admin User</div>
+                            <div class="user-email">admin@example.org</div>
+                        </div>
+                    </div>
+                </label>
+            </div>
+        </fieldset>
         <fieldset>
             <legend>Advanced options</legend>
             <p class="field">
