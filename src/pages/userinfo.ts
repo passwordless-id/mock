@@ -16,6 +16,7 @@ export async function GET(context :APIContext) {
             const tokenData = await verifyJwt(access_token);
             return buildUserInfo(tokenData.scope);
         } catch (error) {
+            console.log("Invalid JWT token:", error);
             return toErrorResponse(401, "invalid_token", "Invalid access token");
         }
     }
@@ -23,6 +24,7 @@ export async function GET(context :APIContext) {
         const KV = context.locals.runtime.env.KV;
         const rawJson = await KV.get(`access_tokens/${access_token}`);
         if (!rawJson) {
+            console.log("Opaque token not found in KV");
             return toErrorResponse(401, "invalid_token", "Invalid access token");
         }
     
