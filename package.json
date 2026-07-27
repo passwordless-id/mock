@@ -2,10 +2,10 @@
 	"name": "@passwordless-id/mock",
 	"description": "OpenID/Oauth2 mock server can be used to test libraries, implementations or perform automated integration tests.",
 	"dependencies": {
-		"@astrojs/cloudflare": "^13",
-		"@astrojs/mdx": "^6",
+		"@astrojs/cloudflare": "^14",
+		"@astrojs/mdx": "^7",
 		"@tsndr/cloudflare-worker-jwt": "^3.2.1",
-		"astro": "^6"
+		"astro": "^7"
 	},
 	"devDependencies": {
 		"wrangler": "^4"
