@@ -1,4 +1,5 @@
 import type { APIContext } from "astro";
+import { env } from "cloudflare:workers";
 import { z } from "astro/zod";
 import type { AuthorizeParams } from "./authorize";
 import { toErrorResponse } from "../utils/errors";
@@ -107,7 +108,7 @@ export async function POST(context :APIContext) {
     
     console.log("Token request params:", JSON.stringify(params));
 
-    const KV = context.locals.runtime.env.KV;
+    const KV = env.KV;
 
     if (params.grant_type === 'authorization_code') {
         // Handle authorization code grant

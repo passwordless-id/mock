@@ -1,4 +1,5 @@
 import type { APIContext } from "astro";
+import { env } from "cloudflare:workers";
 import type { AuthorizeParams } from "./authorize";
 import { generateFakeUser } from "../utils/fake_user";
 import { createJwt } from "../utils/tokens";
@@ -17,7 +18,7 @@ export async function POST(context :APIContext) {
     }
 
     const redirectUrl = new URL(params.redirect_uri as string);
-    const KV = context.locals.runtime.env.KV;
+    const KV = env.KV;
 
     const formData = await context.request.formData();
     const user_selection = formData.get("user_selection") as string ?? "john";

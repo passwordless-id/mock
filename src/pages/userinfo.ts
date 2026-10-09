@@ -1,4 +1,5 @@
 import type { APIContext } from "astro";
+import { env } from "cloudflare:workers";
 import { generateFakeUser } from "../utils/fake_user";
 import { toErrorResponse } from "../utils/errors";
 import { verifyJwt } from "../utils/tokens";
@@ -28,7 +29,7 @@ export async function GET(context :APIContext) {
         }
     }
     else {
-        const KV = context.locals.runtime.env.KV;
+        const KV = env.KV;
         const rawJson = await KV.get(`access_tokens/${access_token}`);
         if (!rawJson) {
             console.log("Opaque token not found in KV");
@@ -46,7 +47,9 @@ function getUserSelectionFromSub(sub: string): string {
     const subToUserMap: Record<string, string> = {
         "123-456-789": "john",
         "987-654-321": "admin",
-        "555-555-555": "jane"
+        "555-555-555": "jane",
+        "111-222-333": "anonymous",
+        "222-333-444": "unverified"
     };
     console.log(`Mapping sub ${sub} to user selection:`, subToUserMap[sub]);
     return subToUserMap[sub];

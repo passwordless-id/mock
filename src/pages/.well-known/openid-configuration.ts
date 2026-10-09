@@ -1,4 +1,4 @@
-import { APIContext } from "astro";
+import { type APIContext } from "astro";
 
 export async function GET(context :APIContext) {
     const origin = context.url.origin;

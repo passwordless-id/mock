@@ -36,6 +36,18 @@ const PREDEFINED_USERS: Record<string, MockUser> = {
         email_verified: true,
         picture: "https://www.loremfaces.net/48/id/3.jpg",
     },
+    anonymous: {
+        sub: "111-222-333",
+        name: "Anonymous User",
+        picture: "https://www.loremfaces.net/48/id/4.jpg",
+    },
+    unverified: {
+        sub: "222-333-444",
+        name: "Unverified User",
+        email: "unverified@example.org",
+        email_verified: false,
+        picture: "https://www.loremfaces.net/48/id/5.jpg",
+    },
 };
 
 export function generateFakeUser(userSelection?: string, scope?: string): MockUser {

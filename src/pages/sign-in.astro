@@ -38,6 +38,26 @@ import BaseLayout from "../layouts/BaseLayout.astro"
                         </div>
                     </div>
                 </label>
+                <label class="user-card">
+                    <input type="radio" name="user_selection" value="anonymous" data-testid="user-selection-anonymous" required>
+                    <div class="user-content">
+                        <img src="https://www.loremfaces.net/48/id/4.jpg" alt="Anonymous User" class="user-portrait">
+                        <div class="user-info">
+                            <div class="user-name">Anonymous User</div>
+                            <div class="user-email">No email</div>
+                        </div>
+                    </div>
+                </label>
+                <label class="user-card">
+                    <input type="radio" name="user_selection" value="unverified" data-testid="user-selection-unverified" required>
+                    <div class="user-content">
+                        <img src="https://www.loremfaces.net/48/id/5.jpg" alt="Unverified User" class="user-portrait">
+                        <div class="user-info">
+                            <div class="user-name">Unverified User</div>
+                            <div class="user-email">unverified@example.org (unverified)</div>
+                        </div>
+                    </div>
+                </label>
             </div>
         </fieldset>
         <fieldset>
