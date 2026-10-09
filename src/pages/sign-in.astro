@@ -64,14 +64,14 @@ import BaseLayout from "../layouts/BaseLayout.astro"
             <legend>Advanced options</legend>
             <p class="field">
                 <label for="token_type">Access token type:</label>
-                <select name="token_type" data-test-id="token-type-select" data-testid="token-type-select">
+                <select name="token_type" data-testid="token-type-select" data-testid="token-type-select">
                     <option value="opaque">Opaque Token</option>
                     <option value="jwt">Json Web Token</option>
                 </select>
             </p>
             <p class="field">
                 <label for="expires_in">Access token expires in:</label>
-                <select name="expires_in" data-test-id="expires-in-select" data-testid="expires-in-select">
+                <select name="expires_in" data-testid="expires-in-select" data-testid="expires-in-select">
                     <option value="60">1 minute</option>
                     <option value="3600">1 hour</option>
                     <option value="86400">1 day</option>
@@ -83,7 +83,7 @@ import BaseLayout from "../layouts/BaseLayout.astro"
         </fieldset>
         <p>&nbsp;</p>
         <center>
-            <button type="submit" class="btn" data-test-id="sign-in-btn" data-testid="sign-in-btn">Sign In</button>
+            <button type="submit" class="btn" data-testid="sign-in-btn" data-testid="sign-in-btn">Sign In</button>
         </center>
     </form>
 </BaseLayout>
