@@ -164,7 +164,7 @@ export async function POST(context :APIContext) {
             } else if(storedParams.token_type === 'jwt') {
                 // create a dummy access_token (JWT) with only sub and scope
                 const { generateFakeUser } = await import('../utils/fake_user');
-                const user = generateFakeUser(storedParams.user_selection);
+                const user = generateFakeUser(storedParams.user_selection, params.scope, context.url.origin);
                 const access_token = await createJwt({
                     iss: context.url.origin,
                     aud: params.client_id,

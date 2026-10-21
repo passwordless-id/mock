@@ -16,7 +16,7 @@ const PREDEFINED_USERS: Record<string, MockUser> = {
         family_name: "Doe",
         email: "john.doe@example.org",
         email_verified: true,
-        picture: "https://www.loremfaces.net/48/id/2.jpg",
+        picture: "/images/avatars/john.svg",
     },
     jane: {
         sub: "555-555-555",
@@ -25,7 +25,7 @@ const PREDEFINED_USERS: Record<string, MockUser> = {
         family_name: "Smith",
         email: "jane.smith@example.org",
         email_verified: true,
-        picture: "https://www.loremfaces.net/48/id/1.jpg",
+        picture: "/images/avatars/jane.svg",
     },
     admin: {
         sub: "987-654-321",
@@ -34,23 +34,23 @@ const PREDEFINED_USERS: Record<string, MockUser> = {
         family_name: "User",
         email: "admin@example.org",
         email_verified: true,
-        picture: "https://www.loremfaces.net/48/id/3.jpg",
+        picture: "/images/avatars/admin.svg",
     },
     anonymous: {
         sub: "111-222-333",
         name: "Anonymous User",
-        picture: "https://www.loremfaces.net/48/id/4.jpg",
+        picture: "/images/avatars/anonymous.svg",
     },
     unverified: {
         sub: "222-333-444",
         name: "Unverified User",
         email: "unverified@example.org",
         email_verified: false,
-        picture: "https://www.loremfaces.net/48/id/5.jpg",
+        picture: "/images/avatars/unverified.svg",
     },
 };
 
-export function generateFakeUser(userSelection?: string, scope?: string): MockUser {
+export function generateFakeUser(userSelection: string, scope: string, origin: string): MockUser {
     let user: MockUser;
     
     if (userSelection && PREDEFINED_USERS[userSelection]) {
@@ -58,6 +58,8 @@ export function generateFakeUser(userSelection?: string, scope?: string): MockUs
     } else {
         user = PREDEFINED_USERS.john;
     }
+
+    const picture = user.picture ? new URL(user.picture, origin).toString() : undefined;
     
     if (scope) {
         const scopeSet = new Set(scope.split(" "));
@@ -66,7 +68,7 @@ export function generateFakeUser(userSelection?: string, scope?: string): MockUs
             filteredUser.name = user.name;
             filteredUser.given_name = user.given_name;
             filteredUser.family_name = user.family_name;
-            filteredUser.picture = user.picture;
+            filteredUser.picture = picture;
         }
         if (scopeSet.has("email")) {
             filteredUser.email = user.email;
@@ -74,7 +76,7 @@ export function generateFakeUser(userSelection?: string, scope?: string): MockUs
         }
         return filteredUser;
     }
-    return user;
+    return { ...user, picture };
 }
 
 export function getAvailableUsers() {

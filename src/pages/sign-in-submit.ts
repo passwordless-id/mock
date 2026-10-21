@@ -37,7 +37,7 @@ export async function POST(context :APIContext) {
 
     if (response_type_parts.includes("id_token")) {
         // create a dummy id_token (JWT)
-        const user = generateFakeUser(user_selection, params.scope);
+        const user = generateFakeUser(user_selection, params.scope, context.url.origin);
         const id_token = await createJwt({
             iss: context.url.origin,
             aud: params.client_id,

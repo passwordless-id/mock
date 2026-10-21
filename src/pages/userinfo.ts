@@ -22,7 +22,7 @@ export async function GET(context :APIContext) {
                 console.log("No user selection found for sub:", tokenData.sub);
                 return toErrorResponse(401, "invalid_token", "Invalid access token");
             }
-            return buildUserInfo(tokenData.scope, user_selection);
+            return buildUserInfo(tokenData.scope, user_selection, context.url.origin);
         } catch (error) {
             console.log("Invalid JWT token:", error);
             return toErrorResponse(401, "invalid_token", "Invalid access token");
@@ -38,7 +38,7 @@ export async function GET(context :APIContext) {
     
         const tokenData = JSON.parse(rawJson);
         console.log("Verified opaque token data:", tokenData);
-        return buildUserInfo(tokenData.scope, tokenData.user_selection);
+        return buildUserInfo(tokenData.scope, tokenData.user_selection, context.url.origin);
     }
 }
 
@@ -55,7 +55,7 @@ function getUserSelectionFromSub(sub: string): string {
     return subToUserMap[sub];
 }
 
-function buildUserInfo(scope: string, user_selection?: string) {
-    const userInfo = generateFakeUser(user_selection, scope);
+function buildUserInfo(scope: string, user_selection: string | undefined, origin: string) {
+    const userInfo = generateFakeUser(user_selection, scope, origin);
     return new Response(JSON.stringify(userInfo), { headers: { 'Content-Type': 'application/json' } });
 }
