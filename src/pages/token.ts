@@ -164,20 +164,29 @@ export async function POST(context :APIContext) {
             } else if(storedParams.token_type === 'jwt') {
                 // create a dummy access_token (JWT) with only sub and scope
                 const { generateFakeUser } = await import('../utils/fake_user');
-                const user = generateFakeUser(storedParams.user_selection, params.scope, context.url.origin);
+                const userinfo = generateFakeUser(storedParams.user_selection, params.scope ?? '', context.url.origin);
                 const access_token = await createJwt({
                     iss: context.url.origin,
                     aud: params.client_id,
-                    sub: user.sub,
+                    sub: userinfo.sub,
                     exp: Math.floor(Date.now() / 1000) + storedParams.expires_in,
                     iat: Math.floor(Date.now() / 1000),
-                    scope: params.scope
+                    scope: params.scope,
+                });
+                const id_token = await createJwt({
+                    iss: context.url.origin,
+                    aud: params.client_id,
+                    exp: Math.floor(Date.now() / 1000) + storedParams.expires_in,
+                    iat: Math.floor(Date.now() / 1000),
+                    scope: params.scope,
+                    ...userinfo
                 });
                 const tokenResponse = {
                     access_token,
                     token_type: "Bearer",
                     expires_in: storedParams.expires_in,
-                    scope: params.scope
+                    scope: params.scope,
+                    id_token
                 };
                 return new Response(JSON.stringify(tokenResponse), { headers: { 'Content-Type': 'application/json' } });
             } else {
