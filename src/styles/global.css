@@ -111,10 +111,16 @@ input, select, textarea {
 
 /* User Selection Cards */
 .user-selection {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 1rem;
   margin: 1rem 0;
+}
+
+@media (min-width: 768px) {
+  .user-selection {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .user-card {
