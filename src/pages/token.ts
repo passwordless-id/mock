@@ -4,7 +4,7 @@ import { z } from "astro/zod";
 import type { AuthorizeParams } from "./authorize";
 import { toErrorResponse } from "../utils/errors";
 import { createJwt } from "../utils/tokens";
-
+import { generateFakeUser } from '../utils/fake_user';
 
 /**
  * Parameters for the /token endpoint.
@@ -151,6 +151,16 @@ export async function POST(context :APIContext) {
             // all checks passed, delete the code to prevent reuse
             await KV.delete(params.code);
 
+            const userinfo = generateFakeUser(storedParams.user_selection, params.scope ?? '', context.url.origin);
+            const id_token = await createJwt({
+                    iss: context.url.origin,
+                    aud: params.client_id,
+                    exp: Math.floor(Date.now() / 1000) + storedParams.expires_in,
+                    iat: Math.floor(Date.now() / 1000),
+                    scope: params.scope,
+                    ...userinfo
+                });
+
             if(storedParams.token_type === 'opaque') {
                 const access_token = crypto.randomUUID();
                 await KV.put(`access_tokens/${access_token}`, JSON.stringify({...params, user_selection: storedParams.user_selection}), { expirationTtl: storedParams.expires_in });
@@ -158,13 +168,12 @@ export async function POST(context :APIContext) {
                     access_token,
                     token_type: "Bearer",
                     expires_in: storedParams.expires_in,
-                    scope: params.scope
+                    scope: params.scope,
+                    id_token
                 };
                 return new Response(JSON.stringify(tokenResponse), { headers: { 'Content-Type': 'application/json' } });
-            } else if(storedParams.token_type === 'jwt') {
-                // create a dummy access_token (JWT) with only sub and scope
-                const { generateFakeUser } = await import('../utils/fake_user');
-                const userinfo = generateFakeUser(storedParams.user_selection, params.scope ?? '', context.url.origin);
+            }
+            else if(storedParams.token_type === 'jwt') {    
                 const access_token = await createJwt({
                     iss: context.url.origin,
                     aud: params.client_id,
@@ -173,14 +182,7 @@ export async function POST(context :APIContext) {
                     iat: Math.floor(Date.now() / 1000),
                     scope: params.scope,
                 });
-                const id_token = await createJwt({
-                    iss: context.url.origin,
-                    aud: params.client_id,
-                    exp: Math.floor(Date.now() / 1000) + storedParams.expires_in,
-                    iat: Math.floor(Date.now() / 1000),
-                    scope: params.scope,
-                    ...userinfo
-                });
+                
                 const tokenResponse = {
                     access_token,
                     token_type: "Bearer",

@@ -80,6 +80,8 @@ export function generateFakeUser(userSelection: string, scope: string, origin: s
             filteredUser.given_name = user.given_name;
             filteredUser.family_name = user.family_name;
             filteredUser.picture = picture;
+            if(user.custom_prop)
+                filteredUser.custom_prop = user.custom_prop;
         }
         if (scopeSet.has("email")) {
             filteredUser.email = user.email;
