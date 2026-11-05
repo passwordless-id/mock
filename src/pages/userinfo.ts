@@ -49,7 +49,8 @@ function getUserSelectionFromSub(sub: string): string {
         "987-654-321": "admin",
         "555-555-555": "jane",
         "111-222-333": "anonymous",
-        "222-333-444": "unverified"
+        "222-333-444": "unverified",
+        "333-444-555": "customized"
     };
     console.log(`Mapping sub ${sub} to user selection:`, subToUserMap[sub]);
     return subToUserMap[sub];

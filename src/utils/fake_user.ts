@@ -6,6 +6,7 @@ export interface MockUser {
     email?: string;
     email_verified?: boolean;
     picture?: string;
+    custom_prop?: string;
 }
 
 const PREDEFINED_USERS: Record<string, MockUser> = {
@@ -38,16 +39,26 @@ const PREDEFINED_USERS: Record<string, MockUser> = {
     },
     anonymous: {
         sub: "111-222-333",
-        name: "Anonymous User",
+        name: "Without E-Mail",
         picture: "/images/avatars/anonymous.svg",
     },
     unverified: {
         sub: "222-333-444",
-        name: "Unverified User",
+        name: "With unverified E-Mail",
         email: "unverified@example.org",
         email_verified: false,
         picture: "/images/avatars/unverified.svg",
     },
+    customized: {
+        sub: "333-444-555",
+        name: "With customized params",
+        given_name: "Customized",
+        family_name: "User",
+        email: "customized@example.org",
+        email_verified: true,
+        picture: "/images/avatars/customized.svg",
+        custom_prop: "custom_value"
+    }
 };
 
 export function generateFakeUser(userSelection: string, scope: string, origin: string): MockUser {
